@@ -1,0 +1,28 @@
+{
+  "name": "routeplanner_api_nodejs",
+  "version": "0.0.1",
+  "description": "RoutePlanner app API in Node.js",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/murilosntdev/routeplanner_api_nodejs.git"
+  },
+  "author": "murilosntdev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/murilosntdev/routeplanner_api_nodejs/issues"
+  },
+  "homepage": "https://github.com/murilosntdev/routeplanner_api_nodejs#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
+}
