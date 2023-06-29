@@ -8,6 +8,7 @@ dotenv.config();
 const port = process.env.EXPRESS_PORT;
 const app = express();
 
+app.use(express.json())
 app.use(
     cors({
         origin: process.env.CORS_ORIGIN

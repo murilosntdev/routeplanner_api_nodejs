@@ -1,4 +1,5 @@
 import Router from "express";
+import { createCompany } from "../controllers/company.js";
 
 const router = Router();
 
@@ -9,6 +10,8 @@ router.get('/', (req, res) => {
         mensagem: "API Rodando..."
     })
 });
+
+router.post('/createCompany', createCompany);
 
 router.use((req, res, next) => {
     const error = new Error("Página Não Encontrada");
