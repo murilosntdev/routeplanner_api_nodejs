@@ -10,3 +10,15 @@ export const pool = new pg.Pool({
     password: process.env.POSTGRE_PASSWORD,
     port: process.env.POSTGRE_PORT
 });
+
+export const dbExecute = (query, params=[]) => {
+    return new Promise((resolve, reject) => {
+        pool.query(query, params, (error, result, fields) => {
+            if(error) {
+                reject(error);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+};
