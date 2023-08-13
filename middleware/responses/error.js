@@ -9,9 +9,19 @@ export const errorResponse = (statusCode, details, debugInfo) => {
             response.erro.mensagem = "O Servidor Recebeu Uma Solicitacao Incorreta";
             break;
         }
+        case 409: {
+            response.erro.status = 409;
+            response.erro.mensagem = "Houve Um Conflito No Servidor"
+            break;
+        }
         case 422: {
             response.erro.status = 422;
-            response.erro.mensagem = "Entidade não processavel"
+            response.erro.mensagem = "Entidade Nao Processavel"
+            break;
+        }
+        case 503: {
+            response.erro.status = 503;
+            response.erro.mensagem = "Serviço Insidponivel"
             break;
         }
         default: {
@@ -22,7 +32,7 @@ export const errorResponse = (statusCode, details, debugInfo) => {
     };
 
     if(details) response.erro.detalhes = details;
-    if(debugInfo) response.erro.debugInfo = debugInfo;
+    if(process.env.SHOW_DEBUG_INFO && debugInfo) response.erro.debugInfo = debugInfo;
 
     return(response);
 }

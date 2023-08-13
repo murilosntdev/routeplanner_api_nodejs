@@ -12,12 +12,14 @@ export const pool = new pg.Pool({
 });
 
 export const dbExecute = (query, params=[]) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((response) => {
         pool.query(query, params, (error, result, fields) => {
             if(error) {
-                reject(error);
+                const errorContent = {}
+                errorContent.dbError = error;
+                response(errorContent);
             } else {
-                resolve(result);
+                response(result);
             }
         });
     });
