@@ -1,25 +1,25 @@
-export const validateCnpj = (cnpj) => {
+export const validateCnpj = (content, fieldName) => {
     const regex = /^[0-9]{14}$/;
 
-    if(typeof cnpj !== 'string') {
-        return {cnpj: "O campo 'cnpj' deve ser uma string numerica"};
+    if(typeof content !== 'string') {
+        return {[fieldName]: `O campo '${fieldName}' deve ser uma string numerica`};
     }
-    if(cnpj.trim() === "") {
-        return {cnpj: "O campo 'cnpj' e obrigatorio"};
+    if(content.trim() === "") {
+        return {[fieldName]: `O campo '${fieldName}' e obrigatorio`};
     }
-    if(cnpj.length != 14) {
-        return {cnpj: "O campo 'cnpj' deve conter de 14 caracteres numericos"};
+    if(content.length != 14) {
+        return {[fieldName]: `O campo '${fieldName}' deve conter de 14 caracteres numericos`};
     }
-    if(!regex.exec(cnpj)) {
-        return {cnpj: "O campo 'cnpj' contem caracteres invalidos"};
+    if(!regex.exec(content)) {
+        return {[fieldName]: `O campo '${fieldName}' contem caracteres invalidos`};
     }
-    if (cnpj == "00000000000000" || cnpj == "11111111111111" || cnpj == "22222222222222" || cnpj == "33333333333333" || cnpj == "44444444444444" || cnpj == "55555555555555" || cnpj == "66666666666666" || cnpj == "77777777777777" || cnpj == "88888888888888" || cnpj == "99999999999999") {
-        return {cpnj: "O campo 'cnpj' precisa ser um CNPJ valido"};
+    if (content == "00000000000000" || content == "11111111111111" || content == "22222222222222" || content == "33333333333333" || content == "44444444444444" || content == "55555555555555" || content == "66666666666666" || content == "77777777777777" || content == "88888888888888" || content == "99999999999999") {
+        return {[fieldName]: `O campo '${fieldName}' precisa ser um CNPJ valido`};
     }
 
-    var cnpjLength = cnpj.length - 2
-    var cnpjNumber = cnpj.substring(0,cnpjLength);
-    var verifDigit = cnpj.substring(cnpjLength);
+    var cnpjLength = content.length - 2
+    var cnpjNumber = content.substring(0,cnpjLength);
+    var verifDigit = content.substring(cnpjLength);
     var sum = 0;
     var pos = cnpjLength - 7;
     
@@ -34,11 +34,11 @@ export const validateCnpj = (cnpj) => {
     var result = sum % 11 < 2 ? 0 : 11 - sum % 11;
     
     if (result != verifDigit.charAt(0)) {
-        return {cpnj: "O campo 'cnpj' precisa ser um CNPJ valido"};
+        return {[fieldName]: `O campo '${fieldName}' precisa ser um CNPJ valido`};
     }
     
     cnpjLength = cnpjLength + 1;
-    cnpjNumber = cnpj.substring(0,cnpjLength);
+    cnpjNumber = content.substring(0,cnpjLength);
     sum = 0;
     pos = cnpjLength - 7;
     
@@ -53,7 +53,7 @@ export const validateCnpj = (cnpj) => {
     result = sum % 11 < 2 ? 0 : 11 - sum % 11;
     
     if (result != verifDigit.charAt(1)) {
-        return {cpnj: "O campo 'cnpj' precisa ser um CNPJ valido"};
+        return {[fieldName]: `O campo '${fieldName}' precisa ser um CNPJ valido`};
     }
 
     return 'valid';

@@ -1,17 +1,17 @@
-export const validatePassword = (password) => {
+export const validatePassword = (content, fieldName) => {
     const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,15}$/;
 
-    if(typeof password !== "string") {
-        return {password: "O campo 'password' deve ser uma string"};
+    if(typeof content !== "string") {
+        return {[fieldName]: `O campo '${fieldName}' deve ser uma string`};
     }
-    if(password.trim() === "") {
-        return {password: "O campo 'password' e obrigatorio"};
+    if(content.trim() === "") {
+        return {[fieldName]: `O campo '${fieldName}' e obrigatorio`};
     }
-    if(password.length < 8 || password.length > 15) {
-        return {password: "O campo 'password' deve conter de 8 a 15 caracteres"};
+    if(content.length < 8 || content.length > 15) {
+        return {[fieldName]: `O campo '${fieldName}' deve conter de 8 a 15 caracteres`};
     }
-    if(!regex.exec(password)) {
-        return {password: "O campo 'password' precisa ser uma senha valida"};
+    if(!regex.exec(content)) {
+        return {[fieldName]: `O campo '${fieldName}' precisa ser uma senha valida`};
     }
 
     return 'valid';

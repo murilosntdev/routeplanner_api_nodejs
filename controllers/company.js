@@ -19,7 +19,7 @@ export const createCompany = async (req, res, next) => {
         if(!name) {
             errorResp.push({name: "O campo 'name' e obrigatorio"});
         } else {
-            var validName = validateCompanyName(name);
+            var validName = validateCompanyName(name, 'name');
             if (validName != 'valid') {
                 errorResp.push(validName);
             }
@@ -28,7 +28,7 @@ export const createCompany = async (req, res, next) => {
         if(!cnpj) {
             errorResp.push({cnpj: "O campo 'cnpj' e obrigatorio"});
         } else {
-            var validCnpj = validateCnpj(cnpj);
+            var validCnpj = validateCnpj(cnpj, 'cnpj');
             if (validCnpj != 'valid') {
                 errorResp.push(validCnpj);
             }
@@ -37,7 +37,7 @@ export const createCompany = async (req, res, next) => {
         if(!email) {
             errorResp.push({email: "O campo 'email' e obrigatorio"});
         } else {
-            var validEmail = validateEmail(email);
+            var validEmail = validateEmail(email, 'email');
             if (validEmail != 'valid') {
                 errorResp.push(validEmail);
             }
@@ -46,7 +46,7 @@ export const createCompany = async (req, res, next) => {
         if(!password) {
             errorResp.push({password: "O campo 'password' e obrigatorio"});
         } else {
-            var validPassword = validatePassword(password);
+            var validPassword = validatePassword(password, 'password');
             if (validPassword != 'valid') {
                 errorResp.push(validPassword);
             }

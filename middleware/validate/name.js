@@ -1,17 +1,17 @@
-export const validateCompanyName = (name) => {
-    const regex = /^\w[\w.\-#&\s]*$/;
+export const validateCompanyName = (content, fieldName) => {
+    const regex = /^\w[\w.\-&\s]*$/;
     
-    if(typeof name !== "string") {
-        return {name: "O campo 'name' deve ser uma string"};
+    if(typeof content !== "string") {
+        return {[fieldName]: `O campo '${fieldName}' deve ser uma string`};
     }
-    if(name.trim() === "") {
-        return {name: "O campo 'name' e obrigatorio"};
+    if(content.trim() === "") {
+        return {[fieldName]: `O campo '${fieldName}' e obrigatorio`};
     }
-    if(name.length < 5 || name.length > 100) {
-        return {name: "O campo 'name' deve conter de 5 a 100 caracteres"};
+    if(content.length < 5 || content.length > 100) {
+        return {[fieldName]: `O campo '${fieldName}' deve conter de 5 a 100 caracteres`};
     }
-    if(!regex.exec(name)) {
-        return {name: "O campo 'name' contem caracteres invalidos"};
+    if(!regex.exec(content)) {
+        return {[fieldName]: `O campo '${fieldName}' contem caracteres invalidos`};
     }
     
     return 'valid';
