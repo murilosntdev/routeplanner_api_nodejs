@@ -58,7 +58,7 @@ export const createCompany = async (req, res, next) => {
             return;
         }
 
-        var query = `SELECT id FROM company WHERE (cnpj = $1) OR (email = $2)`;
+        var query = `SELECT id FROM account WHERE (cnpj = $1) OR (email = $2)`;
         var result = await dbExecute(query, [cnpj, email]);
         
         if(result.dbError) {
@@ -73,7 +73,7 @@ export const createCompany = async (req, res, next) => {
 
         const hashPassword = bcrypt.hashSync(password, 10);
         
-        var query = `INSERT INTO company (name, cnpj, email, password, status) VALUES ($1, $2, $3, $4, 'CONTA CRIADA')`;
+        var query = `INSERT INTO account (name, role, cnpj, email, password, status) VALUES ($1, 'EMPRESA', $2, $3, $4, 'CONTA CRIADA')`;
         var result = await dbExecute(query, [name, cnpj, email, hashPassword]);
         
         if(result.dbError) {
@@ -82,7 +82,7 @@ export const createCompany = async (req, res, next) => {
             return;
         }
 
-        var query = `SELECT id, name FROM company WHERE cnpj = $1`;
+        var query = `SELECT id, name FROM account WHERE cnpj = $1`;
         var result = await dbExecute(query, [cnpj]);
 
         if(result.dbError) {
