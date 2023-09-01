@@ -14,85 +14,76 @@ export const createCompany = async (req, res, next) => {
         const email = req.body.email;
         const password = req.body.password;
 
-        var errorResp = [];
+        var validationErrors = [];
 
-        if(!name) {
-            errorResp.push({name: "O campo 'name' e obrigatorio"});
+        if (!name) {
+            validationErrors.push({ name: "O campo 'name' e obrigatorio" });
         } else {
             var validName = validateCompanyName(name, 'name');
             if (validName != 'valid') {
-                errorResp.push(validName);
+                validationErrors.push(validName);
             }
         }
 
-        if(!cnpj) {
-            errorResp.push({cnpj: "O campo 'cnpj' e obrigatorio"});
+        if (!cnpj) {
+            validationErrors.push({ cnpj: "O campo 'cnpj' e obrigatorio" });
         } else {
             var validCnpj = validateCnpj(cnpj, 'cnpj');
             if (validCnpj != 'valid') {
-                errorResp.push(validCnpj);
+                validationErrors.push(validCnpj);
             }
         }
 
-        if(!email) {
-            errorResp.push({email: "O campo 'email' e obrigatorio"});
+        if (!email) {
+            validationErrors.push({ email: "O campo 'email' e obrigatorio" });
         } else {
             var validEmail = validateEmail(email, 'email');
             if (validEmail != 'valid') {
-                errorResp.push(validEmail);
+                validationErrors.push(validEmail);
             }
         }
 
-        if(!password) {
-            errorResp.push({password: "O campo 'password' e obrigatorio"});
+        if (!password) {
+            validationErrors.push({ password: "O campo 'password' e obrigatorio" });
         } else {
             var validPassword = validatePassword(password, 'password');
             if (validPassword != 'valid') {
-                errorResp.push(validPassword);
+                validationErrors.push(validPassword);
             }
         }
-        
-        if (errorResp.length > 0) {
+
+        if (validationErrors.length > 0) {
             res.status(422);
-            res.json(errorResponse(422, errorResp));
+            res.json(errorResponse(422, validationErrors));
             return;
         }
 
         var query = `SELECT id FROM account WHERE (cnpj = $1) OR (email = $2)`;
         var result = await dbExecute(query, [cnpj, email]);
-        
-        if(result.dbError) {
+
+        if (result.dbError) {
             res.status(503);
             res.json(errorResponse(503, null, result));
             return;
-        } else if(result.rows[0]) {
+        } else if (result.rows[0]) {
             res.status(409);
             res.json(errorResponse(409, "Nao e possivel cadastrar um usuario com esses dados"));
             return;
         }
 
         const hashPassword = bcrypt.hashSync(password, 10);
-        
-        var query = `INSERT INTO account (name, role, cnpj, email, password, status) VALUES ($1, 'EMPRESA', $2, $3, $4, 'CONTA CRIADA')`;
+
+        var query = `INSERT INTO account (name, role, cnpj, email, password, status) VALUES ($1, 'EMPRESA', $2, $3, $4, 'CONTA_CRIADA') RETURNING *`;
         var result = await dbExecute(query, [name, cnpj, email, hashPassword]);
-        
-        if(result.dbError) {
+
+        if (result.dbError) {
             res.status(503);
             res.json(errorResponse(503, null, result));
             return;
-        }
-
-        var query = `SELECT id, name FROM account WHERE cnpj = $1`;
-        var result = await dbExecute(query, [cnpj]);
-
-        if(result.dbError) {
-            res.status(503);
-            res.json(errorResponse(503, null, result));
-            return;
-        } else {
+        } else if (result.rows[0]) {
             const responseMessage = {
                 resultado: `Companhia '${result.rows[0].name}' criada com sucesso`,
-                link: `${process.env.BASE_URL}c/${result.rows[0].id}`
+                link: `${process.env.FRONT_BASE_URL}u/${result.rows[0].id}`
             }
 
             res.status(201);
