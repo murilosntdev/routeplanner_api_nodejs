@@ -1,6 +1,6 @@
 import Router from "express";
 import { createCompany } from "../controllers/company.js";
-import { activateAccount } from "../controllers/token.js";
+import { activateAccount } from "../controllers/authToken.js";
 
 const router = Router();
 

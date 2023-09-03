@@ -4,8 +4,8 @@ import { validateCompanyName } from "../middleware/validate/name.js";
 import { validateCnpj } from "../middleware/validate/identityNumber.js";
 import { validateEmail } from "../middleware/validate/email.js";
 import { validatePassword } from "../middleware/validate/password.js";
-import { dbExecute } from "../src/configDB.js";
 import * as bcrypt from "bcrypt";
+import { dbExecute } from "../middleware/database/dbExecute.js";
 
 export const createCompany = async (req, res, next) => {
     try {
