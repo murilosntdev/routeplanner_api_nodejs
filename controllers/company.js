@@ -1,11 +1,11 @@
+import { dbExecute } from "../middleware/database/dbExecute.js";
 import { errorResponse } from "../middleware/responses/error.js";
 import { successResponse } from "../middleware/responses/success.js";
-import { validateCompanyName } from "../middleware/validate/name.js";
-import { validateCnpj } from "../middleware/validate/identityNumber.js";
 import { validateEmail } from "../middleware/validate/email.js";
+import { validateCnpj } from "../middleware/validate/identityNumber.js";
+import { validateCompanyName } from "../middleware/validate/name.js";
 import { validatePassword } from "../middleware/validate/password.js";
 import * as bcrypt from "bcrypt";
-import { dbExecute } from "../middleware/database/dbExecute.js";
 
 export const createCompany = async (req, res, next) => {
     try {
@@ -83,7 +83,7 @@ export const createCompany = async (req, res, next) => {
         } else if (result.rows[0]) {
             const responseMessage = {
                 resultado: `Companhia '${result.rows[0].name}' criada com sucesso`,
-                link: `${process.env.FRONT_BASE_URL}u/${result.rows[0].id}`
+                link: `${process.env.WEB_BASE_URL}u/${result.rows[0].id}`
             }
 
             res.status(201);

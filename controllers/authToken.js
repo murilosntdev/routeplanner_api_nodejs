@@ -1,17 +1,17 @@
-import { errorResponse } from "../middleware/responses/error.js";
-import { validateId } from "../middleware/validate/id.js";
-import { validateToken } from "../middleware/validate/token.js";
-import { validateStringField } from "../middleware/validate/fieldFormat.js"
-import { confirmToken, createToken } from "../middleware/token/token.js";
-import { successResponse } from "../middleware/responses/success.js";
+import { dbExecute } from "../middleware/database/dbExecute.js";
 import { sendMail } from "../middleware/email/sendMail.js";
 import { hiddenEmail } from "../middleware/hidden/hiddenInfos.js";
-import { dbExecute } from "../middleware/database/dbExecute.js";
+import { errorResponse } from "../middleware/responses/error.js";
+import { successResponse } from "../middleware/responses/success.js";
+import { confirmToken, createToken } from "../middleware/token/token.js";
+import { validateEmail } from "../middleware/validate/email.js"
+import { validateStringField } from "../middleware/validate/fieldFormat.js"
+import { validateToken } from "../middleware/validate/token.js";
 
 export const activateAccount = async (req, res, next) => {
     try {
         const action = req.body.action;
-        const id = req.body.account_id;
+        const email = req.body.account_email;
         const token = req.body.token;
 
         var validationErrors = [];
@@ -25,15 +25,15 @@ export const activateAccount = async (req, res, next) => {
             }
         }
 
-        if (!id) {
-            validationErrors.push({ "account_id": "O campo 'account_id' e obrigatorio" });
+        if (!email) {
+            validationErrors.push({ "account_email": "O campo 'account_email' e obrigatorio"});
         } else {
-            var validId = validateId(id, 'account_id');
-            if (validId != 'valid') {
-                validationErrors.push(validId);
+            var validEmail = validateEmail(email, "account_email");
+            if (validEmail != 'valid') {
+                validationErrors.push(validEmail);
             } else {
-                var query = `SELECT id, name, email, status FROM account WHERE id = $1`;
-                var accountResult = await dbExecute(query, [id]);
+                var query = `SELECT id, name, email, status FROM account WHERE email = $1`;
+                var accountResult = await dbExecute(query, [email]);
 
                 if (accountResult.dbError) {
                     res.status(503);
@@ -41,7 +41,7 @@ export const activateAccount = async (req, res, next) => {
                     return;
                 } else if (!accountResult.rows[0]) {
                     res.status(400);
-                    res.json(errorResponse(400, "O 'acount_id' informado nao existe"));
+                    res.json(errorResponse(400, "Nao existe uma conta com o email informado"));
                     return;
                 }
             }
@@ -66,7 +66,7 @@ export const activateAccount = async (req, res, next) => {
 
         if (action === "create_token") {
             var query = `SELECT id, expiration FROM token WHERE account_id = $1 AND category = 'VALIDATE_ACCOUNT' AND used = false ORDER BY id DESC LIMIT 1`;
-            var result = await dbExecute(query, [id]);
+            var result = await dbExecute(query, [accountResult.rows[0].id]);
 
             if (result.dbError) {
                 res.status(503);
@@ -79,17 +79,17 @@ export const activateAccount = async (req, res, next) => {
 
             if (result.rows[0] && result.rows[0].expiration > actualTime) {
                 res.status(400);
-                res.json(errorResponse(400, "Ainda existe um token ativo para o 'acount_id' informado"));
+                res.json(errorResponse(400, "Ainda existe um token ativo para a conta informada"));
                 return;
             }
 
             if (accountResult.rows[0].status !== 'CONTA_CRIADA') {
                 res.status(400);
-                res.json(errorResponse(400, "Nao pode ser gerado um token de ativacao para o 'account_id' informado"));
+                res.json(errorResponse(400, "Nao pode ser gerado um token de ativacao para a conta informada"));
                 return;
             }
 
-            var tokenResult = await createToken(id, 'VALIDATE_ACCOUNT', 6, 2);
+            var tokenResult = await createToken(accountResult.rows[0].id, 'VALIDATE_ACCOUNT', 6, 2);
 
             if (tokenResult.dbError) {
                 res.status(503);
@@ -117,7 +117,7 @@ export const activateAccount = async (req, res, next) => {
             return;
         } else if (action == "validate_token") {
             var query = `SELECT id, expiration FROM token WHERE account_id = $1 AND category = 'VALIDATE_ACCOUNT' AND used = false ORDER BY id DESC LIMIT 1`;
-            var result = await dbExecute(query, [id]);
+            var result = await dbExecute(query, [accountResult.rows[0].id]);
 
             if (result.dbError) {
                 res.status(503);
@@ -134,7 +134,7 @@ export const activateAccount = async (req, res, next) => {
                 return;
             }
 
-            var confirmResult = await confirmToken(id, 'VALIDATE_ACCOUNT', token);
+            var confirmResult = await confirmToken(accountResult.rows[0].id, 'VALIDATE_ACCOUNT', token);
 
             if (confirmResult.dbError) {
                 res.status(503);
@@ -149,7 +149,7 @@ export const activateAccount = async (req, res, next) => {
             }
 
             var query = `UPDATE account SET status = 'CONTA_ATIVA' WHERE id = $1 RETURNING status`;
-            var result = await dbExecute(query, [id]);
+            var result = await dbExecute(query, [accountResult.rows[0].id]);
 
             if (result.dbError) {
                 res.status(503);
