@@ -1,6 +1,7 @@
 import Router from "express";
-import { createCompany } from "../controllers/company.js";
+import { createCompany } from "../controllers/account.js";
 import { activateAccount } from "../controllers/authToken.js";
+import { login } from "../controllers/login.js";
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.get('/', (req, res) => {
 
 router.post('/createCompany', createCompany);
 router.post('/activateAccount', activateAccount);
+router.post('/login', login);
 
 router.use((req, res, next) => {
     const error = new Error("Página Não Encontrada");

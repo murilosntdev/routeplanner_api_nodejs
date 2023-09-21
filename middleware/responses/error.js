@@ -9,6 +9,16 @@ export const errorResponse = (statusCode, details, debugInfo) => {
             response.erro.mensagem = "O Servidor Recebeu Uma Solicitacao Incorreta";
             break;
         }
+        case 403: {
+            response.erro.status = 403;
+            response.erro.mensagem = "Acesso Proibido";
+            break;
+        }
+        case 404: {
+            response.erro.status = 404;
+            response.erro.mensagem = "Nao Encontrado";
+            break;
+        }
         case 409: {
             response.erro.status = 409;
             response.erro.mensagem = "Houve Um Conflito No Servidor"
