@@ -1,7 +1,7 @@
-import * as nodemailer from "nodemailer";
-import * as dotenv from "dotenv"
 import hbs from "nodemailer-express-handlebars";
 import path from "path";
+import * as dotenv from "dotenv"
+import * as nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -18,10 +18,10 @@ export const smtp = nodemailer.createTransport({
 const handlebarsOptions = {
     viewEngine: {
         extName: ".html",
-        partialsDir: path.resolve('./views'),
+        partialsDir: path.resolve('./src/views'),
         defaultLayout: false,
     },
-    viewPath: path.resolve('./views'),
+    viewPath: path.resolve('./src/views'),
     extName: ".handlebars",
 }
 

@@ -1,9 +1,9 @@
-import { smtp } from "../../src/configEmail.js";
+import { smtp } from "../../configs/emailConfig.js";
 import * as dotenv from "dotenv";
 
 dotenv.config();
 
-export const sendMail = (recipientEmail, subject, template, recipientName, token, context) => {
+export const sendMail = (recipientEmail, subject, template, context) => {
     const configEmail = {
         from: `RoutePlanner <${process.env.NODEMAILER_HOST}>`,
         to: [recipientEmail],
@@ -23,4 +23,13 @@ export const sendMail = (recipientEmail, subject, template, recipientName, token
             response(errorContent);
         });
     });
+}
+
+export const hideEmail = (email) => {
+    var at = email.indexOf("@");
+    var username = email.substring(1, at - 1);
+    var asterisk = '*'.repeat(username.length);
+    var hidden = email.replace(username, asterisk);
+
+    return (hidden);
 }

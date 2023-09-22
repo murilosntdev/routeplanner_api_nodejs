@@ -1,5 +1,5 @@
-import * as crypto from 'crypto';
 import { dbExecute } from '../database/dbExecute.js';
+import * as crypto from 'crypto';
 
 export const createToken = async (account_id, category, hashSize, expirationInMinutes) => {
     const hash = crypto.randomBytes(hashSize).toString('base64').slice(0, hashSize);
@@ -7,10 +7,10 @@ export const createToken = async (account_id, category, hashSize, expirationInMi
     var expiration = new Date();
     expiration.setTime(expiration.getTime() + expirationInMinutes * 60 * 1000);
 
-    var query = `INSERT INTO token (account_id, category, hash, expiration) VALUES ($1, $2, $3, $4) RETURNING *`;
+    var query = `INSERT INTO token (account_id, category, hash, expiration) VALUES ($1, $2, $3, $4) RETURNING hash`;
     var result = await dbExecute(query, [account_id, category, hash, expiration]);
 
-    return result;
+    return (result);
 }
 
 export const confirmToken = async (account_id, category, token) => {
@@ -18,7 +18,7 @@ export const confirmToken = async (account_id, category, token) => {
     var tokenResult = await dbExecute(query, [account_id, category]);
 
     if (tokenResult.dbError) {
-        return tokenResult;
+        return (tokenResult);
     }
 
     if (tokenResult.rows[0].hash === token) {
@@ -26,7 +26,7 @@ export const confirmToken = async (account_id, category, token) => {
         var result = await dbExecute(query, [tokenResult.rows[0].id]);
 
         if (result.dbError) {
-            return result;
+            return (result);
         }
 
         return (result.rows[0].used);

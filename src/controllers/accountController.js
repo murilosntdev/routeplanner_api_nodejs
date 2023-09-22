@@ -17,6 +17,7 @@ export const createCompany = async (req, res, next) => {
         res.json(errorResponse(422, validateInput));
         return;
     }
+
     const checkExistence = await selectIdByCnpjEmail(cnpj, email);
 
     if (checkExistence.dbError) {
