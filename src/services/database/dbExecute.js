@@ -1,4 +1,4 @@
-import { pool } from "../../src/configDB.js";
+import { pool } from "../../configs/dbConfig.js";
 
 export const dbExecute = (query, params = []) => {
     return new Promise((response) => {

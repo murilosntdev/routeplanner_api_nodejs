@@ -41,8 +41,8 @@ export const errorResponse = (statusCode, details, debugInfo) => {
         }
     };
 
-    if(details) response.erro.detalhes = details;
-    if(process.env.SHOW_DEBUG_INFO && debugInfo) response.erro.debugInfo = debugInfo;
+    if (details) response.erro.detalhes = details;
+    if (process.env.SHOW_DEBUG_INFO && debugInfo) response.erro.debugInfo = debugInfo;
 
-    return(response);
+    return (response);
 }

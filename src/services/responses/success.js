@@ -19,7 +19,7 @@ export const successResponse = (statusCode, details) => {
         }
     };
 
-    if(details) response.detalhes = details;
+    if (details) response.detalhes = details;
 
-    return(response);
+    return (response);
 } 
