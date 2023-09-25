@@ -1,5 +1,5 @@
+import { dbExecute } from "../database/dbExecute.js";
 import * as bcrypt from "bcrypt";
-import { dbExecute } from '../database/dbExecute.js';
 
 export const accountPassword = async (accountId, password) => {
     var query = `SELECT id, password FROM account WHERE id = $1`;

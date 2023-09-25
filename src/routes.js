@@ -1,7 +1,7 @@
+import { createCompany } from "./controllers/accountController.js";
+import { activateAccount } from "./controllers/authTokenController.js";
+import { preLogin, login } from "./controllers/sessionController.js";
 import Router from "express";
-import { createCompany } from "../controllers/account.js";
-import { activateAccount } from "../controllers/authToken.js";
-import { login } from "../controllers/login.js";
 
 const router = Router();
 
@@ -9,12 +9,13 @@ router.get('/', (req, res) => {
     res.status(200);
     res.json({
         status: 200,
-        mensagem: "API Rodando..."
+        mensagem: "RoutePlanner API rodando normalmente..."
     })
 });
 
 router.post('/createCompany', createCompany);
 router.post('/activateAccount', activateAccount);
+router.post('/preLogin', preLogin);
 router.post('/login', login);
 
 router.use((req, res, next) => {

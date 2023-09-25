@@ -1,5 +1,8 @@
 import { dbExecute } from '../database/dbExecute.js';
+import jsonwebtoken from "jsonwebtoken";
 import * as crypto from 'crypto';
+
+const { sign } = jsonwebtoken;
 
 export const createToken = async (account_id, category, hashSize, expirationInMinutes) => {
     const hash = crypto.randomBytes(hashSize).toString('base64').slice(0, hashSize);
@@ -33,4 +36,29 @@ export const confirmToken = async (account_id, category, token) => {
     }
 
     return (false);
+}
+
+export const createRefreshToken = async (account_id) => {
+    const jwtToken = sign({
+        account_id: account_id
+    },
+        process.env.JWT_REFRESH_KEY,
+        {
+            expiresIn: "8h"
+        });
+
+    var expiration = new Date();
+    expiration.setTime(expiration.getTime() + 8 * 60 * 60 * 1000);
+
+    var query = `INSERT INTO refresh_token (account_id, token, expiration) VALUES ($1, $2, $3) RETURNING token`;
+    var result = await dbExecute(query, [account_id, jwtToken, expiration]);
+
+    return (result);
+}
+
+export const revokeRefreshToken = async (account_id) => {
+    var query = `UPDATE refresh_token SET revoked = true WHERE account_id = $1 and revoked = false`;
+    var result = await dbExecute(query, [account_id]);
+
+    return (result);
 }
