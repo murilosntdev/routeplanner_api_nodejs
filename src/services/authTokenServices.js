@@ -39,4 +39,23 @@ export const validateActivateAccountInput = (action, email, token) => {
     }
 
     return 'noErrors';
-};
+}
+
+export const validateRefreshTokenInput = (token) => {
+    var inputErrors = [];
+
+    if (!token) {
+        inputErrors.push({ token: "O campo 'token' e obrigatorio" });
+    } else {
+        var validtoken = validateStringField(token, 'token');
+        if (validtoken != 'valid') {
+            inputErrors.push(validtoken);
+        }
+    }
+
+    if (inputErrors.length > 0) {
+        return (inputErrors);
+    }
+
+    return 'noErrors';
+}

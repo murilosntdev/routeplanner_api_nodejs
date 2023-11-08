@@ -171,7 +171,8 @@ export const login = async (req, res, next) => {
         process.env.JWT_KEY,
         {
             expiresIn: "1h"
-        });
+        }
+    );
 
     const revokeResult = await revokeRefreshToken(checkAccount.rows[0].id);
 

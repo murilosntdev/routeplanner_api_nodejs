@@ -2,7 +2,7 @@ import { dbExecute } from '../database/dbExecute.js';
 import jsonwebtoken from "jsonwebtoken";
 import * as crypto from 'crypto';
 
-const { sign } = jsonwebtoken;
+const { sign, verify, decode } = jsonwebtoken;
 
 export const createToken = async (account_id, category, hashSize, expirationInMinutes) => {
     const hash = crypto.randomBytes(hashSize).toString('base64').slice(0, hashSize);
@@ -45,7 +45,8 @@ export const createRefreshToken = async (account_id) => {
         process.env.JWT_REFRESH_KEY,
         {
             expiresIn: "8h"
-        });
+        }
+    );
 
     var expiration = new Date();
     expiration.setTime(expiration.getTime() + 8 * 60 * 60 * 1000);
@@ -54,6 +55,40 @@ export const createRefreshToken = async (account_id) => {
     var result = await dbExecute(query, [account_id, jwtToken, expiration]);
 
     return (result);
+}
+
+export const confirmRefreshToken = async (token) => {
+    var query = `SELECT id, token FROM refresh_token WHERE token = $1 AND revoked = false`;
+    var tokenResult = await dbExecute(query, [token]);
+
+    if (tokenResult.dbError) {
+        return (tokenResult);
+    }
+
+    if (!tokenResult.rows[0]) {
+        return 'notFound';
+    }
+
+    const validateToken = verify(tokenResult.rows[0].token, process.env.JWT_REFRESH_KEY);
+    const actualTimestamp = Math.floor(Date.now() / 1000);
+
+    if (actualTimestamp > validateToken.exp) {
+        return 'overdue';
+    }
+
+    var query = `SELECT email FROM account WHERE id = $1`;
+    var account_result = await dbExecute(query, [validateToken.account_id]);
+
+    var result = revokeRefreshToken(validateToken.account_id);
+
+    if (result.dbError) {
+        return (result);
+    }
+
+    return ({
+        "account_id": validateToken.account_id,
+        "email": account_result.rows[0].email
+    });
 }
 
 export const revokeRefreshToken = async (account_id) => {

@@ -1,5 +1,5 @@
 import { createCompany } from "./controllers/accountController.js";
-import { activateAccount } from "./controllers/authTokenController.js";
+import { activateAccount, refreshToken } from "./controllers/authTokenController.js";
 import { preLogin, login } from "./controllers/sessionController.js";
 import Router from "express";
 
@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
 
 router.post('/createCompany', createCompany);
 router.post('/activateAccount', activateAccount);
+router.post('/refreshToken', refreshToken);
 router.post('/preLogin', preLogin);
 router.post('/login', login);
 

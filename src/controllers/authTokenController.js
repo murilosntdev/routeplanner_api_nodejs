@@ -1,9 +1,12 @@
 import { selectIdNameStatusByEmail, selectIdExpirationByAccount_id, updateStatusById } from "../models/authTokenModel.js";
-import { validateActivateAccountInput } from "../services/authTokenServices.js";
+import { validateActivateAccountInput, validateRefreshTokenInput } from "../services/authTokenServices.js";
 import { sendMail, hideEmail } from "../services/email/email.js";
-import { createToken, confirmToken } from "../services/token/token.js";
+import { createToken, confirmToken, createRefreshToken, confirmRefreshToken } from "../services/token/token.js";
 import { errorResponse } from "../services/responses/error.js";
 import { successResponse } from "../services/responses/success.js";
+import jsonwebtoken from "jsonwebtoken";
+
+const { sign } = jsonwebtoken;
 
 export const activateAccount = async (req, res, next) => {
     const action = req.body.action;
@@ -128,4 +131,50 @@ export const activateAccount = async (req, res, next) => {
         res.json(errorResponse(422, "O 'action' informado nao e invalido"));
         return;
     }
+}
+
+export const refreshToken = async (req, res, next) => {
+    const token = req.body.token;
+
+    const validateInput = validateRefreshTokenInput(token);
+
+    if (validateInput !== 'noErrors') {
+        res.status(422);
+        res.json(errorResponse(422, validateInput));
+        return;
+    }
+
+    const validateToken = await confirmRefreshToken(token);
+
+    if (validateToken === 'notFound' || validateToken === 'overdue') {
+        res.status(400);
+        res.json(errorResponse(400, "Token expirado ou invalido"));
+        return;
+    }
+
+    const jwtToken = sign({
+        account_id: validateToken.account_id,
+        email: validateToken.email
+    },
+        process.env.JWT_KEY,
+        {
+            expiresIn: "1h"
+        }
+    );
+
+    const refreshToken = await createRefreshToken(validateToken.account_id);
+
+    if (refreshToken.dbError) {
+        res.status(503);
+        res.json(errorResponse(503, null, refreshToken));
+        return;
+    }
+
+    const dataResponse = {
+        "token": jwtToken,
+        "refresh_token": refreshToken.rows[0].token
+    };
+
+    res.status(200);
+    res.json(successResponse(200, dataResponse));
 }
