@@ -1,6 +1,7 @@
 import { validateEmail } from "./validators/emailValidator.js";
+import { validateStringField } from "./validators/fieldFormatValidator.js";
 import { validatePassword } from "./validators/passwordValidator.js";
-import { validateToken } from "../services/validators/tokenValidator.js";
+import { validateToken } from "./validators/tokenValidator.js";
 
 const emailField = (email) => {
     if (!email) {
@@ -65,6 +66,25 @@ export const validateLoginInput = (email, password, token) => {
         var validToken = validateToken(token, 'token', 4);
         if (validToken != 'valid') {
             inputErrors.push(validToken);
+        }
+    }
+
+    if (inputErrors.length > 0) {
+        return (inputErrors);
+    }
+
+    return 'noErrors';
+}
+
+export const validateLogoutHeader = (token) => {
+    var inputErrors = [];
+
+    if (!token) {
+        inputErrors.push({ token: "O campo 'Authorization' e obrigatorio" });
+    } else {
+        var validAuthorization = validateStringField(token, 'Authorization');
+        if (validAuthorization != 'valid') {
+            inputErrors.push(validAuthorization);
         }
     }
 

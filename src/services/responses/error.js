@@ -9,6 +9,11 @@ export const errorResponse = (statusCode, details, debugInfo) => {
             response.erro.mensagem = "O Servidor Recebeu Uma Solicitacao Incorreta";
             break;
         }
+        case 401: {
+            response.erro.status = 401;
+            response.erro.mensagem = "Nao Autenticado";
+            break;
+        }
         case 403: {
             response.erro.status = 403;
             response.erro.mensagem = "Acesso Proibido";

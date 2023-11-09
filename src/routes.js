@@ -1,6 +1,6 @@
 import { createCompany } from "./controllers/accountController.js";
 import { activateAccount, refreshToken } from "./controllers/authTokenController.js";
-import { preLogin, login } from "./controllers/sessionController.js";
+import { preLogin, login, logout } from "./controllers/sessionController.js";
 import Router from "express";
 
 const router = Router();
@@ -18,6 +18,7 @@ router.post('/activateAccount', activateAccount);
 router.post('/refreshToken', refreshToken);
 router.post('/preLogin', preLogin);
 router.post('/login', login);
+router.post('/logout', logout);
 
 router.use((req, res, next) => {
     const error = new Error("Página Não Encontrada");

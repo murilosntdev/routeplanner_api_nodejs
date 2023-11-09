@@ -97,3 +97,17 @@ export const revokeRefreshToken = async (account_id) => {
 
     return (result);
 }
+
+export const confirmBearerToken = (bearerToken) => {
+    var token = bearerToken.substring(7);
+
+    try {
+        verify(token, process.env.JWT_KEY);
+    } catch (error) {
+        return 'invalid';
+    }
+
+    const decodedToken = decode(token);
+
+    return decodedToken;
+}

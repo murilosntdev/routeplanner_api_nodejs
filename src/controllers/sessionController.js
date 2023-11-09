@@ -3,8 +3,8 @@ import { sendMail, hideEmail } from "../services/email/email.js";
 import { accountPassword } from "../services/password/password.js";
 import { errorResponse } from "../services/responses/error.js";
 import { successResponse } from "../services/responses/success.js";
-import { validatePreLoginInput, validateLoginInput } from "../services/sessionServices.js";
-import { createToken, confirmToken, createRefreshToken, revokeRefreshToken } from "../services/token/token.js";
+import { validatePreLoginInput, validateLoginInput, validateLogoutHeader } from "../services/sessionServices.js";
+import { createToken, confirmToken, createRefreshToken, revokeRefreshToken, confirmBearerToken } from "../services/token/token.js";
 import jsonwebtoken from "jsonwebtoken";
 
 const { sign } = jsonwebtoken;
@@ -198,4 +198,35 @@ export const login = async (req, res, next) => {
 
     res.status(200);
     res.json(successResponse(200, dataResponse));
+}
+
+export const logout = async (req, res, next) => {
+    const bearerToken = req.headers.authorization;
+
+    const validateHeader = validateLogoutHeader(bearerToken);
+
+    if (validateHeader !== 'noErrors') {
+        res.status(401);
+        res.json(errorResponse(401));
+        return;
+    }
+
+    var verifyBearerToken = confirmBearerToken(req.headers.authorization);
+
+    if (verifyBearerToken === 'invalid') {
+        res.status(401);
+        res.json(errorResponse(401));
+        return;
+    }
+
+    const revokeResult = await revokeRefreshToken(verifyBearerToken.account_id);
+
+    if (revokeResult.dbError) {
+        res.status(503);
+        res.json(errorResponse(503, null, revokeResult));
+        return;
+    }
+
+    res.status(204);
+    res.json(successResponse(204));
 }
