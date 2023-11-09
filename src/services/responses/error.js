@@ -36,7 +36,7 @@ export const errorResponse = (statusCode, details, debugInfo) => {
         }
         case 503: {
             response.erro.status = 503;
-            response.erro.mensagem = "Serviço Insidponivel"
+            response.erro.mensagem = "Serviço Indisponivel"
             break;
         }
         default: {

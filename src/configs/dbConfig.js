@@ -8,5 +8,8 @@ export const pool = new pg.Pool({
     host: process.env.POSTGRE_HOST,
     database: process.env.POSTGRE_DATABASE,
     password: process.env.POSTGRE_PASSWORD,
-    port: process.env.POSTGRE_PORT
+    port: process.env.POSTGRE_PORT,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
